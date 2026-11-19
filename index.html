@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Level 19 Unlocked — Happy Birthday Saad</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-obsidian: #070b14;
+      --bg-slate: #0f172a;
+      --accent-cobalt: #2563eb;
+      --accent-cyan: #38bdf8;
+      --accent-gold: #f59e0b;
+      --accent-gold-light: #fcd34d;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100dvh;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-obsidian);
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.16) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
+        linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      color: #f8fafc;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .font-display {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .glass-card {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.88), rgba(9, 13, 24, 0.94));
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+    }
+
+    .gold-border {
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.15);
+    }
+
+    /* Hide customize button unless ?edit=1 is present */
+    #customize-btn {
+      display: none;
+    }
+    body.edit-mode #customize-btn {
+      display: inline-flex;
+    }
+
+    /* Step Transitions */
+    .step-section {
+      display: none;
+      width: 100%;
+      max-width: 460px;
+      animation: fadeSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .step-section.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Floating Target Nodes */
+    .target-orb {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #38bdf8, #1d4ed8 65%, #0f172a 100%);
+      border: 2px solid rgba(125, 211, 252, 0.65);
+      box-shadow:
+        0 0 24px rgba(56, 189, 248, 0.45),
+        inset 0 -6px 14px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.18s ease, box-shadow 0.2s ease;
+      animation: floatOrb 2.8s ease-in-out infinite;
+    }
+    .target-orb:nth-child(2) {
+      animation-delay: 0.45s;
+      background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706 65%, #451a03 100%);
+      border-color: rgba(252, 211, 77, 0.7);
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.45), inset 0 -6px 14px rgba(0, 0, 0, 0.5);
+    }
+    .target-orb:nth-child(3) {
+      animation-delay: 0.9s;
+    }
+    .target-orb:active {
+      transform: scale(0.88);
+    }
+    .target-orb.popped {
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-9px); }
+    }
+
+    /* Dark Ganache & Gold Cake */
+    .cake-wrapper {
+      position: relative;
+      width: 240px;
+      height: 185px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .candles-row {
+      display: flex;
+      gap: 28px;
+      z-index: 10;
+      margin-bottom: -4px;
+    }
+
+    .candle {
+      position: relative;
+      width: 14px;
+      height: 46px;
+      background: repeating-linear-gradient(
+        -45deg,
+        #1e293b,
+        #1e293b 5px,
+        #f59e0b 5px,
+        #f59e0b 10px
+      );
+      border-radius: 4px 4px 2px 2px;
+      border: 1px solid rgba(252, 211, 77, 0.45);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .candle:hover {
+      transform: scale(1.08);
+    }
+
+    .wick {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 6px;
+      background: #94a3b8;
+    }
+
+    .flame {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 20px;
+      background: radial-gradient(ellipse at bottom, #ffffff 10%, #fde047 45%, #f97316 85%, transparent 100%);
+      border-radius: 50% 50% 35% 35%;
+      box-shadow: 0 0 16px #f59e0b, 0 0 28px rgba(249, 115, 22, 0.7);
+      animation: flicker 0.18s infinite alternate;
+      transform-origin: bottom center;
+    }
+
+    .candle.blown .flame {
+      display: none;
+    }
+
+    .smoke {
+      position: absolute;
+      top: -26px;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(203, 213, 225, 0.65);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .candle.blown .smoke {
+      animation: riseSmoke 1.1s ease-out forwards;
+    }
+
+    @keyframes flicker {
+      0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+      100% { transform: translateX(-50%) scale(1.08, 0.94) rotate(2deg); }
+    }
+
+    @keyframes riseSmoke {
+      0% { opacity: 0.85; transform: translate(-50%, 0) scale(0.7); }
+      100% { opacity: 0; transform: translate(-35%, -34px) scale(2.4); }
+    }
+
+    .cake-top-tier {
+      width: 156px;
+      height: 46px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-bottom: 3px solid #f59e0b;
+      border-radius: 10px 10px 4px 4px;
+      position: relative;
+      box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.06);
+    }
+
+    .cake-bottom-tier {
+      width: 206px;
+      height: 58px;
+      background: linear-gradient(180deg, #172033 0%, #090d16 100%);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-bottom: 4px solid #2563eb;
+      border-radius: 10px 10px 6px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    .cake-plate {
+      width: 236px;
+      height: 10px;
+      background: linear-gradient(90deg, #334155, #94a3b8, #334155);
+      border-radius: 999px;
+    }
+
+    .vip-ticket {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+      border: 1.5px dashed rgba(245, 158, 11, 0.7);
+      position: relative;
+    }
+  </style>
+</head>
+<body class="px-4 py-6">
+
+  <!-- Top Utility Controls -->
+  <div class="fixed top-4 right-4 z-40 flex items-center gap-2">
+    <button id="sound-toggle" type="button" aria-label="Toggle Sound"
+      class="px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900/80 border border-slate-700/80 text-slate-300 hover:text-white hover:border-sky-400/50 transition flex items-center gap-1.5 backdrop-blur-md">
+      <span id="sound-icon">🔊</span>
+      <span id="sound-label">Sound On</span>
+    </button>
+    <button id="customize-btn" type="button"
+      class="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500/20 border border-amber-400/50 text-amber-300 hover:bg-amber-500/30 transition items-center gap-1 backdrop-blur-md">
+      <span>✏️</span>
+      <span>Customize</span>
+    </button>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="w-full max-w-[460px] mb-5">
+    <div class="flex items-center justify-between text-[11px] font-display tracking-wider uppercase text-slate-400 mb-1.5 px-1">
+      <span id="step-indicator-text">STAGE 01 // INCOMING DROP</span>
+      <span id="step-percent" class="text-sky-400">25%</span>
+    </div>
+    <div class="w-full h-1.5 bg-slate-800/90 rounded-full overflow-hidden border border-slate-700/60">
+      <div id="progress-fill" class="h-full bg-gradient-to-r from-blue-600 via-sky-400 to-amber-400 transition-all duration-500" style="width: 25%;"></div>
+    </div>
+  </div>
+
+  <!-- STEP 1: CLASSIFIED DROP INTRO -->
+  <section id="step-1" class="step-section active">
+    <div class="glass-card rounded-2xl p-6 sm:p-8 text-center relative overflow-hidden">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-sky-400/30 text-sky-300 text-xs font-display tracking-widest uppercase mb-5">
+        <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+        <span>Priority Transmission</span>
+      </div>
+
+      <div class="w-20 h-20 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-blue-600/30 to-amber-500/20 border border-amber-400/40 flex items-center justify-center text-4xl shadow-lg">
+        🎯
+      </div>
+
+      <h1 class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
+        HEY <span id="intro-name" class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-amber-400">SAAD</span>
+      </h1>
+      <p class="text-xs font-display tracking-[0.2em] uppercase text-amber-400 mb-4">
+        LEVEL <span id="intro-age">19</span> UNLOCKED
+      </p>
+
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-7">
+        I couldn't be there in person to celebrate today, so I built this quick interactive drop instead. Complete 3 fast security checks to unlock your birthday message.
+      </p>
+
+      <button type="button" onclick="goToStep(2)"
+        class="w-full py-3.5 px-6 rounded-xl font-display font-bold text-sm tracking-wider uppercase text-slate-950 bg-gradient-to-r from-sky-400 via-blue-400 to-amber-400 hover:brightness-110 active:scale-[0.98] transition shadow-lg shadow-blue-600/25">
+        Initiate Unlock Sequence →
+      </button>
+    </div>
+  </section>
+
+  <!-- STEP 2: TARGET ORBS + LEVEL 19 CHECK -->
+  <section id="step-2" class="step-section">
+    <div class="glass-card rounded-2xl p-6 sm:p-8 text-center">
+      <span class="inline-block px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-display tracking-widest uppercase mb-3">
+        Security Check 01
+      </span>
+      <h2 class="font-display text-xl sm:text-2xl font-bold text-white mb-2">
+        Clear All 3 Energy Nodes
+      </h2>
+      <p class="text-slate-400 text-sm mb-6">
+        Tap each glowing node to charge up Level <span class="display-age">19</span>.
+      </p>
+
+      <!-- 3 Interactive Orbs -->
+      <div id="orbs-container" class="flex items-center justify-center gap-4 sm:gap-6 my-6 min-h-[100px]">
+        <div class="target-orb" onclick="popOrb(this, 0)">
+          <span class="text-xl">⚡</span>
+          <span class="text-[10px] font-display font-bold text-white/90 mt-0.5">NODE 01</span>
+        </div>
+        <div class="target-orb" onclick="popOrb(this, 1)">
+          <span class="text-xl">🔥</span>
+          <span class="text-[10px] font-display font-bold text-white/90 mt-0.5">NODE 02</span>
+        </div>
+        <div class="target-orb" onclick="popOrb(this, 2)">
+          <span class="text-xl">🏆</span>
+          <span class="text-[10px] font-display font-bold text-white/90 mt-0.5">NODE 03</span>
+        </div>
+      </div>
+
+      <p id="orb-status" class="text-xs font-display tracking-wider uppercase text-sky-400 mb-4">
+        0 / 3 Nodes Cleared
+      </p>
+
+      <!-- Mini Trivia Unlock -->
+      <div id="trivia-box" class="hidden mt-5 pt-5 border-t border-slate-800 text-left animate-fadeIn">
+        <p class="text-xs font-display uppercase tracking-wider text-amber-400 mb-1.5">
+          Verification Question
+        </p>
+        <p class="text-sm font-medium text-slate-200 mb-3">
+          What is the official game plan for <span class="display-name">Saad</span> at age <span class="display-age">19</span>?
+        </p>
+        <div class="space-y-2">
+          <button type="button" onclick="selectTrivia(this, true)"
+            class="w-full text-left px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-sky-400 text-sm text-slate-200 transition">
+            A) Bigger goals, solid health, and winning the year
+          </button>
+          <button type="button" onclick="selectTrivia(this, true)"
+            class="w-full text-left px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-sky-400 text-sm text-slate-200 transition">
+            B) Collecting a well-earned treat when we catch up
+          </button>
+          <button type="button" onclick="selectTrivia(this, true)"
+            class="w-full text-left px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-amber-400 text-sm text-slate-200 transition">
+            C) All of the above — no excuses
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3: BLOW OUT THE CANDLES -->
+  <section id="step-3" class="step-section">
+    <div class="glass-card rounded-2xl p-6 sm:p-8 text-center">
+      <span class="inline-block px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs font-display tracking-widest uppercase mb-3">
+        Final Check
+      </span>
+      <h2 class="font-display text-xl sm:text-2xl font-bold text-white mb-2">
+        Make a Wish & Blow Out the Candles
+      </h2>
+      <p class="text-slate-400 text-sm mb-6">
+        Tap each flame on the cake (or hit the button below) to extinguish all 3 candles.
+      </p>
+
+      <!-- Custom Dark & Gold Cake -->
+      <div class="cake-wrapper my-6">
+        <div class="candles-row">
+          <div class="candle" onclick="blowCandle(this)">
+            <div class="wick"></div>
+            <div class="flame"></div>
+            <div class="smoke"></div>
+          </div>
+          <div class="candle" onclick="blowCandle(this)">
+            <div class="wick"></div>
+            <div class="flame"></div>
+            <div class="smoke"></div>
+          </div>
+          <div class="candle" onclick="blowCandle(this)">
+            <div class="wick"></div>
+            <div class="flame"></div>
+            <div class="smoke"></div>
+          </div>
+        </div>
+        <div class="cake-top-tier"></div>
+        <div class="cake-bottom-tier">
+          <span class="font-display text-xs font-extrabold tracking-widest text-amber-400 uppercase">
+            LVL <span class="display-age">19</span> // <span class="display-name">SAAD</span>
+          </span>
+        </div>
+        <div class="cake-plate"></div>
+      </div>
+
+      <p id="candle-status" class="text-xs font-display tracking-wider uppercase text-amber-400 mb-5">
+        3 Flames Lit — Tap to Blow Out
+      </p>
+
+      <button id="blow-all-btn" type="button" onclick="blowAllCandles()"
+        class="w-full py-3 px-5 rounded-xl font-display font-semibold text-xs tracking-wider uppercase text-sky-300 bg-slate-900 border border-sky-400/40 hover:bg-sky-500/15 transition">
+        💨 Blow Out All Candles
+      </button>
+    </div>
+  </section>
+
+  <!-- STEP 4: FINAL BIRTHDAY CARD & VIP PASS -->
+  <section id="step-4" class="step-section">
+    <div class="glass-card gold-border rounded-2xl p-6 sm:p-8 text-center relative overflow-hidden">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-display tracking-widest uppercase mb-4">
+        <span>★</span>
+        <span>Happy <span class="display-age">19</span>th Birthday</span>
+        <span>★</span>
+      </div>
+
+      <h1 class="font-display text-2xl sm:text-3xl font-black text-white tracking-tight mb-4">
+        HAPPY BIRTHDAY, <span class="display-name text-amber-400 uppercase">SAAD</span>!
+      </h1>
+
+      <!-- Personal Birthday Message -->
+      <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 sm:p-5 text-left mb-5">
+        <p id="final-message" class="text-slate-200 text-sm sm:text-base leading-relaxed whitespace-pre-line">Happy 19th Birthday, Saad! Even though I couldn't be there in person to celebrate with you today, I'm wishing you all the very best in everything you do. May this new chapter bring you great health, success, peace of mind, and plenty of reasons to smile. Have an amazing day!</p>
+        <p class="mt-4 text-right font-display text-xs tracking-wider uppercase text-sky-400">
+          — <span id="final-sender">Abdul Moiz Meer</span>
+        </p>
+      </div>
+
+      <!-- VIP Raincheck Pass -->
+      <div class="vip-ticket rounded-xl p-4 text-left mb-6">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[10px] font-display font-bold tracking-[0.2em] uppercase text-amber-400">
+            VIP RAINCHECK PASS // NO EXPIRY
+          </span>
+          <span class="text-xs">🎟️</span>
+        </div>
+        <p id="final-voucher" class="text-sm font-semibold text-white">
+          Good for one proper birthday celebration & treat on me as soon as we catch up!
+        </p>
+        <p class="text-[11px] text-slate-400 mt-1">
+          Issued by <span class="sender-inline text-slate-300 font-medium">Abdul Moiz Meer</span> • Valid for <span class="display-name">Saad</span>
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-2.5">
+        <button type="button" onclick="launchCelebrationConfetti()"
+          class="flex-1 py-3 px-4 rounded-xl font-display font-bold text-xs tracking-wider uppercase text-slate-950 bg-gradient-to-r from-amber-400 to-sky-400 hover:brightness-110 active:scale-[0.98] transition">
+          🎉 Fire Confetti Again
+        </button>
+        <button type="button" onclick="resetExperience()"
+          class="py-3 px-4 rounded-xl font-display font-semibold text-xs tracking-wider uppercase text-slate-300 bg-slate-900 border border-slate-700 hover:border-slate-500 transition">
+          ↺ Replay
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMIZER MODAL (Hidden unless ?edit=1 is in URL) -->
+  <div id="customizer-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="glass-card rounded-2xl w-full max-w-md p-6 border border-slate-700 max-h-[90dvh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-display text-base font-bold text-white uppercase tracking-wider">Customize Drop</h3>
+        <button type="button" onclick="closeCustomizer()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <div class="space-y-3.5 text-left">
+        <div class="grid grid-cols-3 gap-3">
+          <div class="col-span-2">
+            <label class="block text-xs text-slate-400 mb-1">Recipient Name</label>
+            <input id="input-name" type="text" value="Saad"
+              class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Age / Level</label>
+            <input id="input-age" type="text" value="19"
+              class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Your Name (Sender)</label>
+          <input id="input-sender" type="text" value="Abdul Moiz Meer"
+            class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400" />
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Birthday Message</label>
+          <textarea id="input-message" rows="4"
+            class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400">Happy 19th Birthday, Saad! Even though I couldn't be there in person to celebrate with you today, I'm wishing you all the very best in everything you do. May this new chapter bring you great health, success, peace of mind, and plenty of reasons to smile. Have an amazing day!</textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">VIP Raincheck Pass</label>
+          <input id="input-voucher" type="text" value="Good for one proper birthday celebration & treat on me as soon as we catch up!"
+            class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400" />
+        </div>
+
+        <div class="pt-2 flex flex-col gap-2">
+          <button type="button" onclick="applyCustomValues()"
+            class="w-full py-2.5 px-4 rounded-xl font-display font-bold text-xs uppercase tracking-wider text-slate-950 bg-sky-400 hover:bg-sky-300 transition">
+            Save & Apply Changes
+          </button>
+          <button type="button" onclick="copyShareLink()"
+            class="w-full py-2.5 px-4 rounded-xl font-display font-semibold text-xs uppercase tracking-wider text-amber-300 bg-amber-500/15 border border-amber-400/40 hover:bg-amber-500/25 transition">
+            🔗 Copy Shareable Link
+          </button>
+        </div>
+        <p id="copy-feedback" class="text-center text-xs text-emerald-400 hidden">Link copied to clipboard!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Default Configuration
+    const config = {
+      name: 'Saad',
+      age: '19',
+      sender: 'Abdul Moiz Meer',
+      message: "Happy 19th Birthday, Saad! Even though I couldn't be there in person to celebrate with you today, I'm wishing you all the very best in everything you do. May this new chapter bring you great health, success, peace of mind, and plenty of reasons to smile. Have an amazing day!",
+      voucher: 'Good for one proper birthday celebration & treat on me as soon as we catch up!'
+    };
+
+    let soundEnabled = true;
+    let orbsPopped = 0;
+    let candlesBlown = 0;
+
+    // Show customize button ONLY if ?edit=1 is in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('edit') === '1') {
+      document.body.classList.add('edit-mode');
+    }
+
+    // Load any URL query parameters if shared via custom link
+    if (urlParams.has('n')) config.name = urlParams.get('n');
+    if (urlParams.has('a')) config.age = urlParams.get('a');
+    if (urlParams.has('s')) config.sender = urlParams.get('s');
+    if (urlParams.has('m')) config.message = urlParams.get('m');
+    if (urlParams.has('v')) config.voucher = urlParams.get('v');
+
+    function renderConfig() {
+      document.title = `Level ${config.age} Unlocked — Happy Birthday ${config.name}`;
+      document.getElementById('intro-name').textContent = config.name.toUpperCase();
+      document.getElementById('intro-age').textContent = config.age;
+      document.getElementById('final-message').textContent = config.message;
+      document.getElementById('final-sender').textContent = config.sender;
+      document.getElementById('final-voucher').textContent = config.voucher;
+
+      document.querySelectorAll('.display-name').forEach(el => {
+        el.textContent = config.name;
+      });
+      document.querySelectorAll('.display-age').forEach(el => {
+        el.textContent = config.age;
+      });
+      document.querySelectorAll('.sender-inline').forEach(el => {
+        el.textContent = config.sender;
+      });
+
+      document.getElementById('input-name').value = config.name;
+      document.getElementById('input-age').value = config.age;
+      document.getElementById('input-sender').value = config.sender;
+      document.getElementById('input-message').value = config.message;
+      document.getElementById('input-voucher').value = config.voucher;
+    }
+
+    // Sound Synthesis via Tone.js
+    async function ensureAudio() {
+      if (!soundEnabled) return false;
+      if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') {
+        await Tone.start();
+      }
+      return soundEnabled && typeof Tone !== 'undefined';
+    }
+
+    async function playClickSound() {
+      if (!(await ensureAudio())) return;
+      const synth = new Tone.Synth({
+        oscillator: { type: 'triangle' },
+        envelope: { attack: 0.005, decay: 0.08, sustain: 0, release: 0.05 }
+      }).toDestination();
+      synth.triggerAttackRelease('C5', '32n');
+    }
+
+    async function playPopSound(index) {
+      if (!(await ensureAudio())) return;
+      const notes = ['E5', 'G5', 'B5'];
+      const synth = new Tone.MembraneSynth({
+        pitchDecay: 0.03,
+        octaves: 3,
+        envelope: { attack: 0.002, decay: 0.18, sustain: 0, release: 0.08 }
+      }).toDestination();
+      synth.triggerAttackRelease(notes[index % notes.length], '16n');
+    }
+
+    async function playBlowSound() {
+      if (!(await ensureAudio())) return;
+      const noise = new Tone.NoiseSynth({
+        noise: { type: 'white' },
+        envelope: { attack: 0.02, decay: 0.25, sustain: 0, release: 0.1 }
+      }).toDestination();
+      noise.volume.value = -10;
+      noise.triggerAttackRelease('8n');
+    }
+
+    async function playFanfare() {
+      if (!(await ensureAudio())) return;
+      const poly = new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'triangle' },
+        envelope: { attack: 0.02, decay: 0.25, sustain: 0.15, release: 0.6 }
+      }).toDestination();
+      const now = Tone.now();
+      poly.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', now);
+      poly.triggerAttackRelease(['D4', 'F#4', 'A4'], '8n', now + 0.16);
+      poly.triggerAttackRelease(['E4', 'G#4', 'B4'], '8n', now + 0.32);
+      poly.triggerAttackRelease(['C5', 'E5', 'G5', 'C6'], '2n', now + 0.48);
+    }
+
+    // Sound Toggle
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
+      document.getElementById('sound-label').textContent = soundEnabled ? 'Sound On' : 'Muted';
+      if (soundEnabled) playClickSound();
+    });
+
+    // Step Navigation
+    const stepLabels = {
+      1: ['STAGE 01 // INCOMING DROP', '25%'],
+      2: ['STAGE 02 // SECURITY CHECK', '50%'],
+      3: ['STAGE 03 // MAKE A WISH', '75%'],
+      4: ['STAGE 04 // LEVEL UNLOCKED', '100%']
+    };
+
+    function goToStep(stepNum) {
+      playClickSound();
+      document.querySelectorAll('.step-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(`step-${stepNum}`).classList.add('active');
+      document.getElementById('step-indicator-text').textContent = stepLabels[stepNum][0];
+      document.getElementById('step-percent').textContent = stepLabels[stepNum][1];
+      document.getElementById('progress-fill').style.width = stepLabels[stepNum][1];
+
+      if (stepNum === 4) {
+        playFanfare();
+        launchCelebrationConfetti();
+      }
+    }
+
+    // Step 2: Pop Orbs
+    function popOrb(el, idx) {
+      if (el.classList.contains('popped')) return;
+      el.classList.add('popped');
+      orbsPopped++;
+      playPopSound(idx);
+
+      document.getElementById('orb-status').textContent = `${orbsPopped} / 3 Nodes Cleared`;
+
+      if (orbsPopped >= 3) {
+        document.getElementById('orb-status').textContent = 'All Nodes Cleared — Complete Verification Below';
+        document.getElementById('trivia-box').classList.remove('hidden');
+      }
+    }
+
+    function selectTrivia(btn) {
+      btn.classList.add('border-emerald-400', 'bg-emerald-500/15', 'text-white');
+      setTimeout(() => goToStep(3), 420);
+    }
+
+    // Step 3: Blow Out Candles
+    function blowCandle(candleEl) {
+      if (candleEl.classList.contains('blown')) return;
+      candleEl.classList.add('blown');
+      candlesBlown++;
+      playBlowSound();
+
+      const remaining = 3 - candlesBlown;
+      if (remaining > 0) {
+        document.getElementById('candle-status').textContent = `${remaining} Flame${remaining > 1 ? 's' : ''} Remaining`;
+      } else {
+        document.getElementById('candle-status').textContent = 'Wish Locked In! Unlocking Card...';
+        document.getElementById('blow-all-btn').disabled = true;
+        setTimeout(() => goToStep(4), 750);
+      }
+    }
+
+    function blowAllCandles() {
+      document.querySelectorAll('.candle:not(.blown)').forEach((c, i) => {
+        setTimeout(() => blowCandle(c), i * 140);
+      });
+    }
+
+    // Confetti Burst
+    function launchCelebrationConfetti() {
+      if (typeof confetti !== 'function') return;
+      const colors = ['#38bdf8', '#2563eb', '#f59e0b', '#fcd34d', '#ffffff'];
+      confetti({
+        particleCount: 75,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors
+      });
+      setTimeout(() => {
+        confetti({
+          particleCount: 45,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors
+        });
+        confetti({
+          particleCount: 45,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors
+        });
+      }, 260);
+    }
+
+    // Replay
+    function resetExperience() {
+      orbsPopped = 0;
+      candlesBlown = 0;
+      document.querySelectorAll('.target-orb').forEach(o => o.classList.remove('popped'));
+      document.getElementById('orb-status').textContent = '0 / 3 Nodes Cleared';
+      document.getElementById('trivia-box').classList.add('hidden');
+      document.querySelectorAll('#trivia-box button').forEach(b => {
+        b.classList.remove('border-emerald-400', 'bg-emerald-500/15', 'text-white');
+      });
+
+      document.querySelectorAll('.candle').forEach(c => c.classList.remove('blown'));
+      document.getElementById('candle-status').textContent = '3 Flames Lit — Tap to Blow Out';
+      document.getElementById('blow-all-btn').disabled = false;
+
+      goToStep(1);
+    }
+
+    // Customizer Modal Controls
+    document.getElementById('customize-btn').addEventListener('click', () => {
+      document.getElementById('customizer-modal').classList.remove('hidden');
+      document.getElementById('customizer-modal').classList.add('flex');
+    });
+
+    function closeCustomizer() {
+      document.getElementById('customizer-modal').classList.add('hidden');
+      document.getElementById('customizer-modal').classList.remove('flex');
+      document.getElementById('copy-feedback').classList.add('hidden');
+    }
+
+    function applyCustomValues() {
+      config.name = document.getElementById('input-name').value.trim() || 'Saad';
+      config.age = document.getElementById('input-age').value.trim() || '19';
+      config.sender = document.getElementById('input-sender').value.trim() || 'Abdul Moiz Meer';
+      config.message = document.getElementById('input-message').value.trim() || config.message;
+      config.voucher = document.getElementById('input-voucher').value.trim() || config.voucher;
+      renderConfig();
+      closeCustomizer();
+    }
+
+    function copyShareLink() {
+      applyCustomValues();
+      const shareUrl = new URL(window.location.origin + window.location.pathname);
+      shareUrl.searchParams.set('n', config.name);
+      shareUrl.searchParams.set('a', config.age);
+      shareUrl.searchParams.set('s', config.sender);
+      shareUrl.searchParams.set('m', config.message);
+      shareUrl.searchParams.set('v', config.voucher);
+
+      navigator.clipboard.writeText(shareUrl.toString()).then(() => {
+        const fb = document.getElementById('copy-feedback');
+        fb.classList.remove('hidden');
+      });
+    }
+
+    // Initialize
+    renderConfig();
+  </script>
+</body>
+</html>
