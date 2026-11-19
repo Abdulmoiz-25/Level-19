@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Birthday Delivery! 🎂</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Fredoka for playful celebratory headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Tone.js for gentle synthesized celebration chimes & pops (no external audio files needed) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+        :root {
+            --font-display: 'Fredoka', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            background: radial-gradient(circle at top left, #fff1f2 0%, #fef3c7 45%, #e0e7ff 100%);
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3, .font-display {
+            font-family: var(--font-display);
+        }
+
+        /* Smooth Screen Transitions */
+        .step-screen {
+            display: none;
+            animation: popIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .step-screen.active {
+            display: flex;
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Floating Gift Box Animation */
+        @keyframes floatGentle {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        .animate-float {
+            animation: floatGentle 3.2s ease-in-out infinite;
+        }
+
+        /* Balloon Floating Animation */
+        @keyframes balloonBob {
+            0%, 100% { transform: translateY(0px) rotate(-3deg); }
+            50% { transform: translateY(-14px) rotate(3deg); }
+        }
+
+        .balloon-item {
+            animation: balloonBob 2.8s ease-in-out infinite;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .balloon-item:active {
+            transform: scale(0.9);
+        }
+
+        .balloon-popped {
+            transform: scale(1.4) !important;
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        /* Candle Flame Flicker */
+        @keyframes flicker {
+            0%, 100% {
+                transform: translateX(-50%) scale(1) rotate(-2deg);
+                border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            }
+            25% {
+                transform: translateX(-50%) scale(1.06, 0.96) rotate(2deg);
+            }
+            50% {
+                transform: translateX(-50%) scale(0.95, 1.08) rotate(-1deg);
+            }
+            75% {
+                transform: translateX(-50%) scale(1.04, 0.98) rotate(3deg);
+            }
+        }
+
+        .candle-flame {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            width: 18px;
+            height: 28px;
+            background: radial-gradient(circle at 50% 75%, #ffffff 0%, #fef08a 35%, #f97316 80%, #ef4444 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 16px 4px rgba(251, 146, 60, 0.65), 0 0 32px 8px rgba(250, 204, 21, 0.35);
+            transform-origin: bottom center;
+            animation: flicker 0.9s infinite alternate ease-in-out;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .candle-flame.extinguished {
+            opacity: 0;
+            transform: translateX(-50%) scale(0.1);
+            animation: none;
+        }
+
+        /* Rising Smoke Particles */
+        @keyframes smokeRise {
+            0% {
+                opacity: 0.85;
+                transform: translate(-50%, 0) scale(0.5);
+            }
+            50% {
+                opacity: 0.55;
+                transform: translate(-35%, -26px) scale(1.15);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-65%, -54px) scale(1.8);
+            }
+        }
+
+        .smoke-puff {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            width: 14px;
+            height: 14px;
+            background: rgba(148, 163, 184, 0.65);
+            border-radius: 9999px;
+            filter: blur(3px);
+            pointer-events: none;
+            animation: smokeRise 1.6s ease-out forwards;
+        }
+
+        /* Ticket / Voucher Perforated Edge Styling */
+        .voucher-card {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 2px dashed #f59e0b;
+            position: relative;
+        }
+
+        .voucher-card::before,
+        .voucher-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 22px;
+            height: 22px;
+            background-color: #ffffff;
+            border-radius: 9999px;
+            transform: translateY(-50%);
+            border: 2px dashed #f59e0b;
+        }
+
+        .voucher-card::before {
+            left: -13px;
+            clip-path: inset(0 0 0 50%);
+        }
+
+        .voucher-card::after {
+            right: -13px;
+            clip-path: inset(0 50% 0 0);
+        }
+
+        /* Custom subtle background dots */
+        .bg-confetti-dots {
+            background-image: radial-gradient(#f43f5e22 2px, transparent 2px), radial-gradient(#8b5cf622 2px, transparent 2px);
+            background-size: 36px 36px;
+            background-position: 0 0, 18px 18px;
+        }
+    </style>
+</head>
+<body class="bg-confetti-dots text-slate-800 flex flex-col items-center justify-between p-4 sm:p-6">
+
+    <!-- Top Utility Bar: Progress & Customize Trigger -->
+    <header class="w-full max-w-md flex items-center justify-between gap-3 pt-1 pb-3 z-20">
+        <!-- Step Progress Pills -->
+        <div class="flex items-center gap-1.5 bg-white/80 backdrop-blur-md px-3 py-2 rounded-full shadow-sm border border-white/60">
+            <span id="dot-1" class="w-2.5 h-2.5 rounded-full bg-rose-500 transition-all duration-300"></span>
+            <span id="dot-2" class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-all duration-300"></span>
+            <span id="dot-3" class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-all duration-300"></span>
+            <span id="dot-4" class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-all duration-300"></span>
+            <span id="step-label" class="text-xs font-semibold text-slate-600 ml-1.5">Step 1 of 4</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Sound Toggle -->
+            <button id="sound-toggle" type="button" aria-label="Toggle Sound Effects"
+                class="p-2.5 rounded-full bg-white/80 hover:bg-white text-slate-700 shadow-sm border border-white/60 transition active:scale-95"
+                title="Toggle Sound Effects">
+                <span id="sound-icon" class="text-base leading-none">🔊</span>
+            </button>
+
+            <!-- Customize Message Button -->
+            <button id="open-customizer-btn" type="button"
+                class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/90 hover:bg-white text-slate-700 text-xs font-bold shadow-sm border border-rose-200/80 transition active:scale-95">
+                <span>✏️</span>
+                <span>Customize</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Interactive Stage -->
+    <main class="w-full max-w-md my-auto relative z-10">
+
+        <!-- ========================================================= -->
+        <!-- STEP 1: GREETING SCREEN                                   -->
+        <!-- ========================================================= -->
+        <section id="screen-1" class="step-screen active flex-col items-center text-center bg-white/90 backdrop-blur-md rounded-3xl p-7 sm:p-9 shadow-xl border border-white">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider mb-5">
+                <span>📬</span> Special Delivery
+            </div>
+
+            <!-- Animated Gift SVG -->
+            <div class="animate-float mb-5">
+                <svg class="w-28 h-28 mx-auto drop-shadow-md" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Box Base -->
+                    <rect x="22" y="54" width="76" height="52" rx="10" fill="#F43F5E"/>
+                    <rect x="52" y="54" width="16" height="52" fill="#FBBF24"/>
+                    <!-- Box Lid -->
+                    <rect x="16" y="38" width="88" height="20" rx="8" fill="#E11D48"/>
+                    <rect x="52" y="38" width="16" height="20" fill="#F59E0B"/>
+                    <!-- Ribbon Bow -->
+                    <path d="M60 38C60 38 42 18 32 26C22 34 44 38 60 38Z" fill="#FBBF24"/>
+                    <path d="M60 38C60 38 78 18 88 26C98 34 76 38 60 38Z" fill="#FBBF24"/>
+                    <circle cx="60" cy="36" r="6" fill="#F59E0B"/>
+                    <!-- Sparkles -->
+                    <circle cx="20" cy="22" r="3" fill="#8B5CF6"/>
+                    <circle cx="102" cy="26" r="3.5" fill="#10B981"/>
+                    <circle cx="96" cy="14" r="2" fill="#F59E0B"/>
+                </svg>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight mb-3">
+                Hey <span class="display-name text-rose-600">Alex</span>! 👋
+            </h1>
+            <p class="text-slate-600 text-base sm:text-lg leading-relaxed mb-7">
+                Since I couldn't be there in person to celebrate with you today, I built you a little interactive birthday surprise.
+            </p>
+
+            <button id="start-btn" type="button"
+                class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-display text-lg font-bold shadow-lg shadow-rose-500/30 transition transform active:scale-95 flex items-center justify-center gap-2">
+                <span>Open Your Birthday Surprise</span>
+                <span class="text-xl">✨</span>
+            </button>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- STEP 2: PLAYFUL MINI-TRIVIA & BALLOON POP                 -->
+        <!-- ========================================================= -->
+        <section id="screen-2" class="step-screen flex-col items-center text-center bg-white/90 backdrop-blur-md rounded-3xl p-7 sm:p-8 shadow-xl border border-white">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-wider mb-4">
+                <span>🎈</span> Security Check
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+                First, a quick check...
+            </h2>
+            <p class="text-slate-600 text-sm sm:text-base mb-5">
+                Pop all <span class="font-bold text-rose-600">3 party balloons</span> to verify you're officially ready to turn <span class="display-age font-bold text-indigo-600">25</span>!
+            </p>
+
+            <!-- Interactive Balloons Grid -->
+            <div id="balloon-grid" class="grid grid-cols-3 gap-3 w-full my-2 py-3">
+                <!-- Balloon 1 -->
+                <button type="button" class="balloon-item flex flex-col items-center justify-center p-2 focus:outline-none" data-balloon="1" style="animation-delay: 0s;">
+                    <svg class="w-20 h-24 drop-shadow" viewBox="0 0 80 100" fill="none">
+                        <ellipse cx="40" cy="38" rx="28" ry="34" fill="#F43F5E"/>
+                        <ellipse cx="31" cy="26" rx="6" ry="11" transform="rotate(-20 31 26)" fill="#FDA4AF" fill-opacity="0.7"/>
+                        <polygon points="40,72 34,79 46,79" fill="#E11D48"/>
+                        <path d="M40 79 Q44 89 38 98" stroke="#94A3B8" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span class="text-xs font-bold text-rose-600 mt-1">Tap me!</span>
+                </button>
+
+                <!-- Balloon 2 -->
+                <button type="button" class="balloon-item flex flex-col items-center justify-center p-2 focus:outline-none" data-balloon="2" style="animation-delay: 0.4s;">
+                    <svg class="w-20 h-24 drop-shadow" viewBox="0 0 80 100" fill="none">
+                        <ellipse cx="40" cy="38" rx="28" ry="34" fill="#8B5CF6"/>
+                        <ellipse cx="31" cy="26" rx="6" ry="11" transform="rotate(-20 31 26)" fill="#DDD6FE" fill-opacity="0.7"/>
+                        <polygon points="40,72 34,79 46,79" fill="#7C3AED"/>
+                        <path d="M40 79 Q35 89 42 98" stroke="#94A3B8" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span class="text-xs font-bold text-purple-600 mt-1">Tap me!</span>
+                </button>
+
+                <!-- Balloon 3 -->
+                <button type="button" class="balloon-item flex flex-col items-center justify-center p-2 focus:outline-none" data-balloon="3" style="animation-delay: 0.8s;">
+                    <svg class="w-20 h-24 drop-shadow" viewBox="0 0 80 100" fill="none">
+                        <ellipse cx="40" cy="38" rx="28" ry="34" fill="#F59E0B"/>
+                        <ellipse cx="31" cy="26" rx="6" ry="11" transform="rotate(-20 31 26)" fill="#FDE68A" fill-opacity="0.7"/>
+                        <polygon points="40,72 34,79 46,79" fill="#D97706"/>
+                        <path d="M40 79 Q45 89 39 98" stroke="#94A3B8" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span class="text-xs font-bold text-amber-600 mt-1">Tap me!</span>
+                </button>
+            </div>
+
+            <!-- Playful Trivia Question (Appears after balloons are popped) -->
+            <div id="trivia-box" class="hidden w-full mt-3 pt-4 border-t border-slate-200/80 animate-[popIn_0.4s_ease_forwards]">
+                <p class="font-display text-lg font-semibold text-slate-800 mb-3">
+                    One final question: Are you officially wiser today? 🤔
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button type="button" class="trivia-answer py-3 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-semibold text-sm transition active:scale-95"
+                        data-reply="100% scientifically proven! Bring on the cake. 🧠✨">
+                        Yes, infinitely wiser 🧠
+                    </button>
+                    <button type="button" class="trivia-answer py-3 px-4 rounded-xl bg-amber-50 hover:bg-amber-100 border-2 border-amber-200 text-amber-800 font-semibold text-sm transition active:scale-95"
+                        data-reply="Honesty is the best policy! Still deserves cake though. 😂🎂">
+                        Honestly, just older 😂
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feedback Pill -->
+            <p id="step2-feedback" class="text-xs font-semibold text-slate-500 mt-3 min-h-[1.25rem]">
+                0 of 3 balloons popped
+            </p>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- STEP 3: INTERACTIVE BIRTHDAY CAKE & CANDLES               -->
+        <!-- ========================================================= -->
+        <section id="screen-3" class="step-screen flex-col items-center text-center bg-white/90 backdrop-blur-md rounded-3xl p-7 sm:p-8 shadow-xl border border-white">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-bold uppercase tracking-wider mb-3">
+                <span>🕯️</span> Make A Wish
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-1.5">
+                Close your eyes & wish!
+            </h2>
+            <p id="candle-instruction" class="text-slate-600 text-sm sm:text-base mb-6">
+                Tap each glowing candle to blow it out! (<span id="candles-left">3</span> left)
+            </p>
+
+            <!-- Interactive Cake Graphic -->
+            <div class="relative w-full max-w-[270px] mx-auto pt-12 pb-2 select-none">
+                <!-- Candles Row -->
+                <div class="flex justify-center items-end gap-8 relative z-20 -mb-2">
+                    <!-- Candle 1 -->
+                    <button type="button" class="candle-btn group relative w-7 h-16 rounded-t-md bg-gradient-to-b from-sky-300 to-sky-500 border-b-2 border-sky-600 shadow-sm cursor-pointer focus:outline-none p-1"
+                        aria-label="Blow out candle 1" data-lit="true">
+                        <!-- Stripes -->
+                        <div class="w-full h-2 bg-white/50 my-2 -skew-y-12"></div>
+                        <div class="w-full h-2 bg-white/50 my-2 -skew-y-12"></div>
+                        <!-- Wick -->
+                        <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-1 h-2.5 bg-slate-800 rounded-full"></div>
+                        <!-- Flame -->
+                        <div class="candle-flame"></div>
+                    </button>
+
+                    <!-- Candle 2 (Center) -->
+                    <button type="button" class="candle-btn group relative w-7 h-20 rounded-t-md bg-gradient-to-b from-rose-300 to-rose-500 border-b-2 border-rose-600 shadow-sm cursor-pointer focus:outline-none p-1"
+                        aria-label="Blow out candle 2" data-lit="true">
+                        <div class="w-full h-2 bg-white/50 my-2.5 -skew-y-12"></div>
+                        <div class="w-full h-2 bg-white/50 my-2.5 -skew-y-12"></div>
+                        <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-1 h-2.5 bg-slate-800 rounded-full"></div>
+                        <div class="candle-flame" style="animation-delay: 0.25s;"></div>
+                    </button>
+
+                    <!-- Candle 3 -->
+                    <button type="button" class="candle-btn group relative w-7 h-16 rounded-t-md bg-gradient-to-b from-amber-300 to-amber-500 border-b-2 border-amber-600 shadow-sm cursor-pointer focus:outline-none p-1"
+                        aria-label="Blow out candle 3" data-lit="true">
+                        <div class="w-full h-2 bg-white/50 my-2 -skew-y-12"></div>
+                        <div class="w-full h-2 bg-white/50 my-2 -skew-y-12"></div>
+                        <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-1 h-2.5 bg-slate-800 rounded-full"></div>
+                        <div class="candle-flame" style="animation-delay: 0.5s;"></div>
+                    </button>
+                </div>
+
+                <!-- Cake Top Tier -->
+                <div class="relative z-10 w-48 h-16 mx-auto bg-gradient-to-r from-pink-200 via-pink-100 to-pink-200 rounded-t-2xl border-b-4 border-pink-300 shadow-inner overflow-hidden">
+                    <!-- Frosting Drips -->
+                    <div class="flex justify-around">
+                        <div class="w-7 h-6 bg-white rounded-b-full shadow-sm"></div>
+                        <div class="w-8 h-8 bg-white rounded-b-full shadow-sm"></div>
+                        <div class="w-6 h-5 bg-white rounded-b-full shadow-sm"></div>
+                        <div class="w-8 h-7 bg-white rounded-b-full shadow-sm"></div>
+                        <div class="w-7 h-6 bg-white rounded-b-full shadow-sm"></div>
+                    </div>
+                    <!-- Sprinkles -->
+                    <span class="absolute bottom-2 left-6 w-2 h-1 bg-rose-500 rounded-full rotate-45"></span>
+                    <span class="absolute bottom-3 left-16 w-2 h-1 bg-indigo-500 rounded-full -rotate-12"></span>
+                    <span class="absolute bottom-2 right-14 w-2 h-1 bg-amber-500 rounded-full rotate-12"></span>
+                    <span class="absolute bottom-3 right-6 w-2 h-1 bg-emerald-500 rounded-full -rotate-45"></span>
+                </div>
+
+                <!-- Cake Bottom Tier -->
+                <div class="relative z-10 w-60 h-20 mx-auto bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200 rounded-t-xl rounded-b-lg shadow-md overflow-hidden">
+                    <!-- Frosting Drips -->
+                    <div class="flex justify-around">
+                        <div class="w-8 h-6 bg-rose-400 rounded-b-full"></div>
+                        <div class="w-9 h-9 bg-rose-400 rounded-b-full"></div>
+                        <div class="w-8 h-5 bg-rose-400 rounded-b-full"></div>
+                        <div class="w-9 h-8 bg-rose-400 rounded-b-full"></div>
+                        <div class="w-8 h-6 bg-rose-400 rounded-b-full"></div>
+                    </div>
+                    <!-- Decorative Ribbon Band -->
+                    <div class="absolute bottom-3 inset-x-0 h-3 bg-rose-500/80"></div>
+                </div>
+
+                <!-- Cake Plate -->
+                <div class="w-68 h-4 mx-auto bg-slate-200 rounded-full shadow-md border-t border-white"></div>
+            </div>
+
+            <!-- Helper Action: Blow All at Once Button (great for accessibility / quick mobile tap) -->
+            <button id="blow-all-btn" type="button"
+                class="mt-6 py-2.5 px-5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition active:scale-95 flex items-center gap-1.5">
+                <span>💨</span>
+                <span>Take a Deep Breath & Blow All</span>
+            </button>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- STEP 4: FINAL CELEBRATION CARD & RAINCHECK VOUCHER        -->
+        <!-- ========================================================= -->
+        <section id="screen-4" class="step-screen flex-col items-center text-center bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-white">
+            <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-gradient-to-r from-rose-500 to-amber-500 text-white text-xs font-bold uppercase tracking-wider mb-3 shadow-sm">
+                <span>🎉</span> Wish Unlocked!
+            </div>
+
+            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight mb-1">
+                Happy <span class="display-age text-rose-600">25</span>th, <span class="display-name text-indigo-600">Alex</span>!
+            </h2>
+            <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4">
+                Cheers to another trip around the sun 🥂
+            </p>
+
+            <!-- Custom Personal Message Box -->
+            <div class="w-full bg-slate-50/90 rounded-2xl p-4 sm:p-5 border border-slate-200/70 text-left mb-5 relative">
+                <span class="text-2xl absolute -top-3 left-4">💌</span>
+                <p id="display-message" class="text-slate-700 text-sm sm:text-base leading-relaxed whitespace-pre-line mt-1">
+                    Even though I can't be there to celebrate with you in person today, I'm cheering you on from afar! Wishing you a year packed with big laughs, spontaneous adventures, and everything you've been working toward.
+                </p>
+                <p class="text-right text-sm font-bold text-rose-600 mt-3">
+                    — <span id="display-sender">Your Favorite Person</span>
+                </p>
+            </div>
+
+            <!-- Raincheck Celebration Voucher -->
+            <div class="voucher-card w-full rounded-2xl p-4 sm:p-5 text-left shadow-sm mb-5">
+                <div class="flex items-center justify-between border-b border-amber-300/70 pb-2 mb-2.5">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800 flex items-center gap-1">
+                        <span>🎟️</span> Official Raincheck Voucher
+                    </span>
+                    <span class="text-[11px] font-mono font-bold text-amber-700 bg-amber-200/70 px-2 py-0.5 rounded">
+                        NO EXPIRATION
+                    </span>
+                </div>
+                <h3 id="display-voucher-title" class="font-display text-lg font-bold text-slate-900 leading-snug">
+                    1x Proper Birthday Dinner & Drinks On Me
+                </h3>
+                <p id="display-voucher-desc" class="text-xs sm:text-sm text-slate-700 mt-1">
+                    Redeemable the very next time we're in the same city. No excuses, my treat!
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-2.5 w-full">
+                <button id="replay-confetti-btn" type="button"
+                    class="flex-1 min-w-[130px] py-3 px-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm shadow-md shadow-rose-500/20 transition active:scale-95 flex items-center justify-center gap-1.5">
+                    <span>🎊</span>
+                    <span>More Confetti!</span>
+                </button>
+                <button id="restart-btn" type="button"
+                    class="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition active:scale-95 flex items-center justify-center gap-1.5">
+                    <span>🔄</span>
+                    <span>Replay</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Note -->
+    <footer class="w-full max-w-md text-center pt-4 pb-1 text-xs text-slate-500/80 z-10">
+        Made with ✨ for <span class="display-name font-semibold">Alex</span>'s Birthday
+    </footer>
+
+    <!-- ========================================================= -->
+    <!-- CUSTOMIZE MESSAGE MODAL / SLIDE-OVER PANEL                -->
+    <!-- ========================================================= -->
+    <div id="customizer-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-[popIn_0.3s_ease_forwards] max-h-[90vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-rose-50 to-amber-50 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="font-display text-lg font-bold text-slate-900">Customize Birthday Card ✏️</h3>
+                    <p class="text-xs text-slate-500">Edit details before sending or sharing a link</p>
+                </div>
+                <button id="close-customizer-btn" type="button" class="p-2 rounded-full hover:bg-white/80 text-slate-500 hover:text-slate-800 transition">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Modal Form Body -->
+            <form id="customizer-form" class="p-6 space-y-4 overflow-y-auto text-left">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="input-name">Recipient's Name</label>
+                        <input id="input-name" type="text" maxlength="30" required
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                            placeholder="e.g., Sam">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" for="input-age">Turning Age</label>
+                        <input id="input-age" type="text" maxlength="10" required
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                            placeholder="e.g., 25">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1" for="input-message">Your Birthday Message</label>
+                    <textarea id="input-message" rows="3" maxlength="500" required
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        placeholder="Write a personal birthday wish..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1" for="input-sender">Signed From</label>
+                    <input id="input-sender" type="text" maxlength="40" required
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        placeholder="e.g., Jordan">
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-bold text-amber-800 mb-1" for="input-voucher-title">🎟️ Raincheck Voucher Title</label>
+                    <input id="input-voucher-title" type="text" maxlength="80" required
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 bg-amber-50/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        placeholder="e.g., 1x Coffee & Cake Date On Me">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-amber-800 mb-1" for="input-voucher-desc">Voucher Fine Print</label>
+                    <input id="input-voucher-desc" type="text" maxlength="140" required
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 bg-amber-50/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        placeholder="e.g., Redeemable next time we hang out!">
+                </div>
+
+                <!-- Shareable URL Helper -->
+                <div class="bg-indigo-50/70 rounded-xl p-3 border border-indigo-100">
+                    <p class="text-[11px] text-indigo-800 font-medium leading-snug mb-2">
+                        💡 <strong>Tip:</strong> Saving updates this page right away and generates a shareable link with your custom text baked into the URL!
+                    </p>
+                    <button id="copy-link-btn" type="button"
+                        class="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition active:scale-95 flex items-center justify-center gap-1.5">
+                        <span>🔗</span>
+                        <span id="copy-link-text">Copy Shareable Link with Custom Message</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2.5 pt-2">
+                    <button type="submit"
+                        class="flex-1 py-3 px-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm shadow-md transition active:scale-95">
+                        Save & Preview
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- INTERACTIVE APPLICATION LOGIC                             -->
+    <!-- ========================================================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ---------------------------------------------------------
+            // 1. DEFAULT & URL-ENCODED STATE MANAGEMENT
+            // ---------------------------------------------------------
+            const defaultData = {
+                name: "Alex",
+                age: "25",
+                message: "Even though I can't be there to celebrate with you in person today, I'm cheering you on from afar! Wishing you a year packed with big laughs, spontaneous adventures, and everything you've been working toward.",
+                sender: "Your Favorite Person",
+                voucherTitle: "1x Proper Birthday Dinner & Drinks On Me",
+                voucherDesc: "Redeemable the very next time we're in the same city. No excuses, my treat!"
+            };
+
+            let cardData = { ...defaultData };
+
+            // Load custom parameters from URL query string if shared via link
+            function loadFromURL() {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    if (params.has('name')) cardData.name = params.get('name');
+                    if (params.has('age')) cardData.age = params.get('age');
+                    if (params.has('msg')) cardData.message = params.get('msg');
+                    if (params.has('from')) cardData.sender = params.get('from');
+                    if (params.has('vtitle')) cardData.voucherTitle = params.get('vtitle');
+                    if (params.has('vdesc')) cardData.voucherDesc = params.get('vdesc');
+                } catch (err) {
+                    console.warn("Could not parse URL parameters:", err);
+                }
+            }
+
+            // Apply cardData values across all screens
+            function renderCardData() {
+                document.querySelectorAll('.display-name').forEach(el => {
+                    el.textContent = cardData.name;
+                });
+                document.querySelectorAll('.display-age').forEach(el => {
+                    el.textContent = cardData.age;
+                });
+                document.getElementById('display-message').textContent = cardData.message;
+                document.getElementById('display-sender').textContent = cardData.sender;
+                document.getElementById('display-voucher-title').textContent = cardData.voucherTitle;
+                document.getElementById('display-voucher-desc').textContent = cardData.voucherDesc;
+                document.title = `Happy ${cardData.age}th Birthday, ${cardData.name}! 🎂`;
+            }
+
+            loadFromURL();
+            renderCardData();
+
+            // ---------------------------------------------------------
+            // 2. SOUND EFFECTS ENGINE (Tone.js)
+            // ---------------------------------------------------------
+            let soundEnabled = true;
+            let synth = null;
+
+            function initAudio() {
+                if (!synth && typeof Tone !== 'undefined') {
+                    try {
+                        synth = new Tone.PolySynth(Tone.Synth, {
+                            oscillator: { type: "triangle" },
+                            envelope: { attack: 0.02, decay: 0.15, sustain: 0.1, release: 0.4 }
+                        }).toDestination();
+                        synth.volume.value = -8;
+                    } catch (e) {
+                        console.warn("Audio init skipped:", e);
+                    }
+                }
+            }
+
+            function playPopSound(pitch = "C5") {
+                if (!soundEnabled) return;
+                initAudio();
+                if (synth) {
+                    if (Tone.context.state !== 'running') Tone.start();
+                    synth.triggerAttackRelease(pitch, "16n");
+                }
+            }
+
+            function playBlowSound() {
+                if (!soundEnabled) return;
+                initAudio();
+                if (synth) {
+                    if (Tone.context.state !== 'running') Tone.start();
+                    synth.triggerAttackRelease(["G4", "E4"], "8n");
+                }
+            }
+
+            function playFanfare() {
+                if (!soundEnabled) return;
+                initAudio();
+                if (synth) {
+                    if (Tone.context.state !== 'running') Tone.start();
+                    const now = Tone.now();
+                    synth.triggerAttackRelease("C5", "8n", now);
+                    synth.triggerAttackRelease("E5", "8n", now + 0.12);
+                    synth.triggerAttackRelease("G5", "8n", now + 0.24);
+                    synth.triggerAttackRelease(["C6", "E6", "G6"], "2n", now + 0.36);
+                }
+            }
+
+            const soundToggleBtn = document.getElementById('sound-toggle');
+            const soundIcon = document.getElementById('sound-icon');
+            soundToggleBtn.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+                if (soundEnabled) playPopSound("E5");
+            });
+
+            // ---------------------------------------------------------
+            // 3. CONFETTI HELPERS
+            // ---------------------------------------------------------
+            function fireMiniConfetti(x = 0.5, y = 0.6) {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 35,
+                        spread: 60,
+                        origin: { x, y },
+                        colors: ['#f43f5e', '#8b5cf6', '#f59e0b', '#10b981', '#3b82f6']
+                    });
+                }
+            }
+
+            function fireGrandConfetti() {
+                if (typeof confetti !== 'function') return;
+                const duration = 2200;
+                const end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0, y: 0.65 },
+                        colors: ['#f43f5e', '#fbbf24', '#8b5cf6']
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1, y: 0.65 },
+                        colors: ['#10b981', '#3b82f6', '#ec4899']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }
+
+            // ---------------------------------------------------------
+            // 4. STEP NAVIGATION CONTROLLER
+            // ---------------------------------------------------------
+            let currentStep = 1;
+            const totalSteps = 4;
+
+            function goToStep(stepNumber) {
+                currentStep = stepNumber;
+
+                // Toggle active screen
+                for (let i = 1; i <= totalSteps; i++) {
+                    const screen = document.getElementById(`screen-${i}`);
+                    const dot = document.getElementById(`dot-${i}`);
+                    if (i === stepNumber) {
+                        screen.classList.add('active');
+                    } else {
+                        screen.classList.remove('active');
+                    }
+
+                    if (i <= stepNumber) {
+                        dot.classList.remove('bg-slate-300');
+                        dot.classList.add('bg-rose-500');
+                    } else {
+                        dot.classList.remove('bg-rose-500');
+                        dot.classList.add('bg-slate-300');
+                    }
+                }
+
+                document.getElementById('step-label').textContent = `Step ${stepNumber} of ${totalSteps}`;
+            }
+
+            // Step 1 -> Step 2
+            document.getElementById('start-btn').addEventListener('click', () => {
+                playPopSound("G5");
+                fireMiniConfetti(0.5, 0.5);
+                goToStep(2);
+            });
+
+            // ---------------------------------------------------------
+            // 5. STEP 2: BALLOON POP & MINI-TRIVIA LOGIC
+            // ---------------------------------------------------------
+            let poppedCount = 0;
+            const balloonButtons = document.querySelectorAll('.balloon-item');
+            const triviaBox = document.getElementById('trivia-box');
+            const step2Feedback = document.getElementById('step2-feedback');
+
+            balloonButtons.forEach((btn, idx) => {
+                btn.addEventListener('click', (e) => {
+                    if (btn.classList.contains('balloon-popped')) return;
+
+                    btn.classList.add('balloon-popped');
+                    poppedCount++;
+
+                    const pitches = ["C5", "E5", "G5"];
+                    playPopSound(pitches[idx % pitches.length]);
+
+                    // Confetti at tap location
+                    const rect = btn.getBoundingClientRect();
+                    const x = (rect.left + rect.width / 2) / window.innerWidth;
+                    const y = (rect.top + rect.height / 2) / window.innerHeight;
+                    fireMiniConfetti(x, y);
+
+                    if (poppedCount < 3) {
+                        step2Feedback.textContent = `${poppedCount} of 3 balloons popped! Keep going!`;
+                    } else {
+                        step2Feedback.textContent = "All balloons popped! Answer below to unlock the cake 👇";
+                        step2Feedback.classList.add('text-rose-600');
+                        setTimeout(() => {
+                            triviaBox.classList.remove('hidden');
+                        }, 250);
+                    }
+                });
+            });
+
+            // Trivia Answer Buttons -> Step 3
+            document.querySelectorAll('.trivia-answer').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const reply = btn.getAttribute('data-reply');
+                    step2Feedback.textContent = reply;
+                    playPopSound("A5");
+                    setTimeout(() => {
+                        goToStep(3);
+                    }, 950);
+                });
+            });
+
+            // ---------------------------------------------------------
+            // 6. STEP 3: INTERACTIVE CANDLES & SMOKE PARTICLES
+            // ---------------------------------------------------------
+            const candleButtons = document.querySelectorAll('.candle-btn');
+            const candlesLeftSpan = document.getElementById('candles-left');
+            const candleInstruction = document.getElementById('candle-instruction');
+            const blowAllBtn = document.getElementById('blow-all-btn');
+            let litCandles = candleButtons.length;
+
+            function createSmokePuff(candleEl) {
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const puff = document.createElement('div');
+                        puff.className = 'smoke-puff';
+                        puff.style.left = `${45 + (Math.random() * 14 - 7)}%`;
+                        candleEl.appendChild(puff);
+                        setTimeout(() => puff.remove(), 1650);
+                    }, i * 160);
+                }
+            }
+
+            function extinguishCandle(candleEl) {
+                if (candleEl.getAttribute('data-lit') !== 'true') return;
+
+                candleEl.setAttribute('data-lit', 'false');
+                const flame = candleEl.querySelector('.candle-flame');
+                if (flame) flame.classList.add('extinguished');
+
+                createSmokePuff(candleEl);
+                playBlowSound();
+
+                litCandles--;
+                if (litCandles > 0) {
+                    candlesLeftSpan.textContent = litCandles;
+                } else {
+                    candleInstruction.innerHTML = `<span class="font-bold text-rose-600">Wish made! Opening your card... ✨</span>`;
+                    blowAllBtn.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => {
+                        playFanfare();
+                        fireGrandConfetti();
+                        goToStep(4);
+                    }, 1100);
+                }
+            }
+
+            candleButtons.forEach(candle => {
+                candle.addEventListener('click', () => extinguishCandle(candle));
+            });
+
+            blowAllBtn.addEventListener('click', () => {
+                candleButtons.forEach((candle, index) => {
+                    setTimeout(() => {
+                        extinguishCandle(candle);
+                    }, index * 180);
+                });
+            });
+
+            // ---------------------------------------------------------
+            // 7. STEP 4: FINAL CELEBRATION CONTROLS & REPLAY
+            // ---------------------------------------------------------
+            document.getElementById('replay-confetti-btn').addEventListener('click', () => {
+                playFanfare();
+                fireGrandConfetti();
+            });
+
+            document.getElementById('restart-btn').addEventListener('click', () => {
+                // Reset Step 2 balloons & trivia
+                poppedCount = 0;
+                balloonButtons.forEach(b => b.classList.remove('balloon-popped'));
+                triviaBox.classList.add('hidden');
+                step2Feedback.textContent = "0 of 3 balloons popped";
+                step2Feedback.classList.remove('text-rose-600');
+
+                // Reset Step 3 candles
+                litCandles = candleButtons.length;
+                candleButtons.forEach(c => {
+                    c.setAttribute('data-lit', 'true');
+                    const flame = c.querySelector('.candle-flame');
+                    if (flame) flame.classList.remove('extinguished');
+                });
+                candleInstruction.innerHTML = `Tap each glowing candle to blow it out! (<span id="candles-left">${litCandles}</span> left)`;
+                blowAllBtn.classList.remove('opacity-0', 'pointer-events-none');
+
+                goToStep(1);
+            });
+
+            // ---------------------------------------------------------
+            // 8. CUSTOMIZE MESSAGE MODAL & URL SHARING
+            // ---------------------------------------------------------
+            const modal = document.getElementById('customizer-modal');
+            const openCustomizerBtn = document.getElementById('open-customizer-btn');
+            const closeCustomizerBtn = document.getElementById('close-customizer-btn');
+            const customizerForm = document.getElementById('customizer-form');
+
+            const inputName = document.getElementById('input-name');
+            const inputAge = document.getElementById('input-age');
+            const inputMessage = document.getElementById('input-message');
+            const inputSender = document.getElementById('input-sender');
+            const inputVoucherTitle = document.getElementById('input-voucher-title');
+            const inputVoucherDesc = document.getElementById('input-voucher-desc');
+
+            function openModal() {
+                inputName.value = cardData.name;
+                inputAge.value = cardData.age;
+                inputMessage.value = cardData.message;
+                inputSender.value = cardData.sender;
+                inputVoucherTitle.value = cardData.voucherTitle;
+                inputVoucherDesc.value = cardData.voucherDesc;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            function closeModal() {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            openCustomizerBtn.addEventListener('click', openModal);
+            closeCustomizerBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            function buildShareableURL() {
+                const url = new URL(window.location.href);
+                url.searchParams.set('name', inputName.value.trim() || defaultData.name);
+                url.searchParams.set('age', inputAge.value.trim() || defaultData.age);
+                url.searchParams.set('msg', inputMessage.value.trim() || defaultData.message);
+                url.searchParams.set('from', inputSender.value.trim() || defaultData.sender);
+                url.searchParams.set('vtitle', inputVoucherTitle.value.trim() || defaultData.voucherTitle);
+                url.searchParams.set('vdesc', inputVoucherDesc.value.trim() || defaultData.voucherDesc);
+                return url.toString();
+            }
+
+            function saveFormChanges() {
+                cardData = {
+                    name: inputName.value.trim() || defaultData.name,
+                    age: inputAge.value.trim() || defaultData.age,
+                    message: inputMessage.value.trim() || defaultData.message,
+                    sender: inputSender.value.trim() || defaultData.sender,
+                    voucherTitle: inputVoucherTitle.value.trim() || defaultData.voucherTitle,
+                    voucherDesc: inputVoucherDesc.value.trim() || defaultData.voucherDesc
+                };
+                renderCardData();
+
+                // Update browser URL cleanly without reloading
+                try {
+                    const newUrl = buildShareableURL();
+                    window.history.replaceState({}, '', newUrl);
+                } catch (e) {
+                    console.warn("History update skipped:", e);
+                }
+            }
+
+            customizerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveFormChanges();
+                closeModal();
+                playPopSound("G5");
+                fireMiniConfetti(0.5, 0.4);
+            });
+
+            // Copy Shareable Link Button (using execCommand fallback for iframe compatibility)
+            const copyLinkBtn = document.getElementById('copy-link-btn');
+            const copyLinkText = document.getElementById('copy-link-text');
+
+            copyLinkBtn.addEventListener('click', () => {
+                saveFormChanges();
+                const shareUrl = buildShareableURL();
+
+                const tempInput = document.createElement('textarea');
+                tempInput.value = shareUrl;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    copyLinkText.textContent = "Copied! Paste into a text message ✅";
+                    copyLinkBtn.classList.replace('bg-indigo-600', 'bg-emerald-600');
+                } catch (err) {
+                    copyLinkText.textContent = "URL Updated in Address Bar!";
+                }
+                document.body.removeChild(tempInput);
+
+                setTimeout(() => {
+                    copyLinkText.textContent = "Copy Shareable Link with Custom Message";
+                    copyLinkBtn.classList.replace('bg-emerald-600', 'bg-indigo-600');
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>
